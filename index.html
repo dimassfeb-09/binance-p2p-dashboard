@@ -12,7 +12,6 @@
   .mica{backdrop-filter:blur(20px);background:rgba(243,243,243,0.85);border-bottom:1px solid var(--border)}
   .card{background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.04)}
   .btn-primary{background:var(--accent);color:#fff;border-radius:4px;padding:6px 14px;font-size:13px;font-weight:600}
-  .btn-primary:hover{background:#005a9e}
   .select-win{background:#fff;border:1px solid #e5e5e5;border-radius:4px;padding:7px 10px;font-size:13px;min-width:140px}
   .input-win{background:#fff;border:1px solid #e5e5e5;border-radius:4px;padding:7px 10px;font-size:13px;min-width:120px}
   .badge{font-size:11px;padding:2px 6px;border-radius:4px;background:#f0f0f0;border:1px solid #e6e6e6}
@@ -34,17 +33,37 @@
 </header>
 
 <main class="max-w-[1120px] mx-auto px-6 py-6">
-  <!-- Filters — masing-masing -->
+  <!-- Spread Binance → Pintu -->
+  <div class="card p-4 mb-4 bg-[#fbfdff]">
+    <div class="flex flex-wrap gap-4 text-sm">
+      <div><div class="text-[11px] text-[#616161] uppercase">Binance BELI (P2P SELL termurah)</div><div id="binancePrice" class="font-mono font-bold text-[15px]">—</div></div>
+      <div class="text-[#8a8a8a] self-center">→</div>
+      <div><div class="text-[11px] text-[#616161] uppercase">Pintu JUAL (Bid) / BELI (Ask)</div><div id="pintuPrice" class="font-mono font-bold text-[15px]">—</div><div class="text-[11px] text-[#8a8a8a]">limit order butuh API key Pro</div></div>
+      <div class="ml-auto text-right">
+        <div class="text-[11px] text-[#616161] uppercase">Spread — Untung kotor / USDT</div>
+        <div id="spread" class="font-mono font-bold text-[15px] text-[#0067c0]">—</div>
+        <div id="spreadNote" class="text-[11px] text-[#8a8a8a]">belum hitung fee transfer + withdraw</div>
+      </div>
+      <div class="w-full grid grid-cols-3 gap-2 mt-2 text-xs">
+        <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Transfer Binance→Pintu</div><div>TRC20 ~1 USDT (~Rp <span id="feeTransfer">17.5k</span>)</div></div>
+        <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Withdraw IDR Pintu</div><div>Rp 4.500 (flat)</div></div>
+        <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Fee trading Pintu</div><div>0.1% jual</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
   <div class="card p-4 mb-4">
     <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
       <div>
-        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Mode</label>
+        <label class="text-[11px] text-[#616161] uppercase">Mode</label>
         <select id="tradeType" class="select-win w-full mt-1">
-          <option value="BUY" selected>Jual USDT (lu JUAL — orang beli)</option>
+          <option value="SELL" selected>Beli USDT (lu BELI — orang jual)</option>
+          <option value="BUY">Jual USDT (lu JUAL — orang beli)</option>
         </select>
       </div>
       <div>
-        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Metode Bayar</label>
+        <label class="text-[11px] text-[#616161] uppercase">Metode Bayar</label>
         <select id="payFilter" class="select-win w-full mt-1">
           <option value="">Semua</option>
           <option value="BCA">BCA</option>
@@ -58,7 +77,7 @@
         </select>
       </div>
       <div>
-        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Min IDR</label>
+        <label class="text-[11px] text-[#616161] uppercase">Min IDR</label>
         <select id="minFilter" class="select-win w-full mt-1">
           <option value="">Semua</option>
           <option value="0-1000000">< 1 jt</option>
@@ -67,7 +86,7 @@
         </select>
       </div>
       <div>
-        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Sort</label>
+        <label class="text-[11px] text-[#616161] uppercase">Sort</label>
         <select id="sortBy" class="select-win w-full mt-1">
           <option value="price-min" selected>Price ↑ → Min ↑</option>
           <option value="price">Price ↑</option>
@@ -75,13 +94,13 @@
         </select>
       </div>
       <div>
-        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Cari Merchant</label>
+        <label class="text-[11px] text-[#616161] uppercase">Cari Merchant</label>
         <input id="search" class="input-win w-full mt-1" placeholder="nama merchant..."/>
       </div>
     </div>
     <div class="flex gap-2 mt-3">
       <button id="refresh" class="btn-primary">Refresh</button>
-      <button id="reset" class="text-xs px-3 py-1 border rounded" style="border-color:var(--border)">Reset filter</button>
+      <button id="reset" class="text-xs px-3 py-1 border rounded" style="border-color:var(--border)">Reset</button>
       <span id="updated" class="text-xs text-[#616161] self-center ml-auto"></span>
       <span id="count" class="text-xs bg-[#f0f0f0] px-2 py-1 rounded"></span>
     </div>
@@ -97,7 +116,7 @@
       </table>
     </div>
   </div>
-  <p class="text-[11px] text-[#8a8a8a] mt-3">Sumber: p2p.binance.com/bapi via /api/p2p • Filter masing-masing (trade, pay, min, search) • Sort Price→Min • 30s refresh</p>
+  <p class="text-[11px] text-[#8a8a8a] mt-3">Sumber: p2p.binance.com/bapi via /api/p2p + Pintu proxy /api/pintu (CoinGecko) • 30s refresh</p>
 </main>
 
 <script>
@@ -108,25 +127,29 @@ function applyFilters(){
   const minF=document.getElementById('minFilter').value;
   const search=document.getElementById('search').value.toLowerCase();
   if(pay) d=d.filter(x=>x.payMethods.toLowerCase().includes(pay));
-  if(minF){
-    const [lo,hi]=minF.split('-').map(Number);
-    d=d.filter(x=>{const m=parseFloat(x.min); return m>=lo && m<=hi;});
-  }
+  if(minF){ const [lo,hi]=minF.split('-').map(Number); d=d.filter(x=>{const m=parseFloat(x.min); return m>=lo && m<=hi;});}
   if(search) d=d.filter(x=>x.merchant.toLowerCase().includes(search));
   const sort=document.getElementById('sortBy').value;
   if(sort==='price-min') d.sort((a,b)=> a.price!==b.price ? a.price-b.price : parseFloat(a.min)-parseFloat(b.min));
   else if(sort==='price') d.sort((a,b)=>a.price-b.price);
   else if(sort==='min') d.sort((a,b)=>parseFloat(a.min)-parseFloat(b.min));
-  const tb=document.getElementById('tbody');
   document.getElementById('count').textContent=d.length+' / '+cache.length;
-  tb.innerHTML=d.map((x,i)=>`<tr class="border-t hover:bg-[#f5f5f5]" style="border-color:#f0f0f0">
+  document.getElementById('tbody').innerHTML=d.map((x,i)=>`<tr class="border-t hover:bg-[#f5f5f5]" style="border-color:#f0f0f0">
     <td class="p-3 pl-4 text-xs text-[#8a8a8a]">${i+1}</td>
     <td class="p-3 text-right font-mono text-[13px] font-semibold">Rp ${Number(x.price).toLocaleString('id-ID')}</td>
     <td class="p-3"><div class="text-[13px] font-medium">${x.merchant}</div><div class="text-[11px] text-[#616161]">${x.completion} • ${x.orders||0} orders • ${x.tradable} USDT</div></td>
     <td class="p-3"><span class="badge">${x.payMethods||'—'}</span></td>
     <td class="p-3 text-right font-mono text-xs">Rp ${Number(x.min).toLocaleString('id-ID')}</td>
     <td class="p-3 pr-4 text-right font-mono text-xs">Rp ${Number(x.max).toLocaleString('id-ID')}</td>
-  </tr>`).join('') || `<tr><td colspan=6 class="p-8 text-center text-sm text-[#616161]">Tidak ada hasil — coba reset filter</td></tr>`;
+  </tr>`).join('') || `<tr><td colspan=6 class="p-8 text-center">Tidak ada hasil</td></tr>`;
+  // update spread
+  if(d.length && window.pintuPrice){
+    const binance=d[0].price;
+    document.getElementById('binancePrice').textContent='Rp '+Number(binance).toLocaleString('id-ID');
+    const spread=window.pintuPrice-binance;
+    document.getElementById('spread').textContent='Rp '+spread.toLocaleString('id-ID')+' ('+(spread/binance*100).toFixed(2)+'%)';
+    document.getElementById('spreadNote').textContent='Untung kotor — belum fee transfer/withdraw';
+  }
 }
 async function load(){
   const t=document.getElementById('tradeType').value;
@@ -135,14 +158,24 @@ async function load(){
   cache=j.data||[]; applyFilters();
   document.getElementById('updated').textContent=new Date().toLocaleTimeString('id-ID')+' • '+j.tradeType;
 }
+async function loadPintu(){
+  try{
+    const r=await fetch('/api/pintu');
+    const j=await r.json();
+    window.pintuPrice=j.bestBid; // lu JUAL ke bid
+    window.pintuAsk=j.bestAsk;
+    document.getElementById('pintuPrice').textContent=j.bestBid ? 'Rp '+Number(j.bestBid).toLocaleString('id-ID')+' (Bid) / Rp '+Number(j.bestAsk).toLocaleString('id-ID')+' (Ask)' : '—';
+    applyFilters();
+  }catch(e){}
+}
 document.getElementById('tradeType').addEventListener('change',load);
 document.getElementById('payFilter').addEventListener('change',applyFilters);
 document.getElementById('minFilter').addEventListener('change',applyFilters);
 document.getElementById('sortBy').addEventListener('change',applyFilters);
 document.getElementById('search').addEventListener('input',applyFilters);
-document.getElementById('refresh').addEventListener('click',load);
+document.getElementById('refresh').addEventListener('click',()=>{load();loadPintu();});
 document.getElementById('reset').addEventListener('click',()=>{document.getElementById('payFilter').value='';document.getElementById('minFilter').value='';document.getElementById('search').value='';document.getElementById('sortBy').value='price-min';applyFilters();});
-load(); setInterval(load,30000);
+load(); loadPintu(); setInterval(()=>{load();loadPintu();},30000);
 </script>
 </body>
 </html>
