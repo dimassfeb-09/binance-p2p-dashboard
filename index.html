@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Binance P2P IDR — dimassfeb.com</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>body{background:#0a0a0a;color:#e5e5e5}</style>
+</head>
+<body class="min-h-screen">
+<header class="max-w-6xl mx-auto p-6 flex justify-between items-center">
+  <h1 class="text-xl font-bold">binance.dimassfeb.com <span class="text-zinc-500 text-sm">P2P USDT/IDR</span></h1>
+  <a href="https://dimassfeb.com" class="text-sm text-zinc-400 hover:text-white">← dimassfeb.com</a>
+</header>
+<main class="max-w-6xl mx-auto px-6 pb-10">
+  <div class="flex gap-2 mb-4 flex-wrap">
+    <select id="tradeType" class="bg-zinc-900 border border-zinc-800 rounded px-3 py-2 text-sm">
+      <option value="SELL" selected>Orang JUAL USDT (lu BELI) — termurah di atas</option>
+      <option value="BUY">Orang BELI USDT (lu JUAL)</option>
+    </select>
+    <button id="refresh" class="bg-white text-black rounded px-4 py-2 text-sm font-medium">Refresh</button>
+    <span id="updated" class="text-xs text-zinc-500 self-center"></span>
+  </div>
+  <div class="overflow-x-auto border border-zinc-800 rounded-xl">
+    <table class="w-full text-sm">
+      <thead class="bg-zinc-900 text-zinc-400">
+        <tr><th class="text-left p-3">#</th><th class="text-right p-3">Price IDR</th><th class="text-left p-3">Merchant</th><th class="text-left p-3">Pay</th><th class="text-right p-3">Min-Max IDR</th><th class="text-right p-3">Orders</th></tr>
+      </thead>
+      <tbody id="tbody"><tr><td colspan="6" class="p-6 text-center text-zinc-500">Loading...</td></tr></tbody>
+    </table>
+  </div>
+  <p class="text-xs text-zinc-600 mt-3">Source: p2p.binance.com/bapi (unofficial) via /api/p2p proxy • Auto-refresh 30s • Sorting termurah di atas</p>
+</main>
+<script>
+async function load(){
+  const t=document.getElementById('tradeType').value;
+  const r=await fetch(`/api/p2p?tradeType=${t}&rows=20`);
+  const j=await r.json();
+  const tb=document.getElementById('tbody');
+  if(!j.data){tb.innerHTML=`<tr><td colspan=6 class="p-6 text-center text-red-400">${j.error||'error'}</td></tr>`;return}
+  tb.innerHTML=j.data.map((d,i)=>`<tr class="border-t border-zinc-800 hover:bg-zinc-900/50">
+    <td class="p-3">${i+1}</td>
+    <td class="p-3 text-right font-mono font-bold">${Number(d.price).toLocaleString('id-ID')}</td>
+    <td class="p-3">${d.merchant} <span class="text-zinc-500 text-xs">${d.completion}</span></td>
+    <td class="p-3 text-xs">${d.payMethods}</td>
+    <td class="p-3 text-right font-mono text-xs">${Number(d.min).toLocaleString('id-ID')} - ${Number(d.max).toLocaleString('id-ID')}</td>
+    <td class="p-3 text-right">${d.orders||'—'}</td>
+  </tr>`).join('');
+  document.getElementById('updated').textContent='Updated '+new Date().toLocaleTimeString('id-ID')+' • '+j.tradeType+' • '+j.count+' ads';
+}
+document.getElementById('tradeType').addEventListener('change',load);
+document.getElementById('refresh').addEventListener('click',load);
+load(); setInterval(load,30000);
+</script>
+</body>
+</html>
