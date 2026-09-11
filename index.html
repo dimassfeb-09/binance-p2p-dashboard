@@ -33,22 +33,26 @@
 </header>
 
 <main class="max-w-[1120px] mx-auto px-6 py-6">
-  <!-- Spread Binance → Pintu -->
+  <!-- Spread Binance → Pintu + Simulasi BEP20 -->
   <div class="card p-4 mb-4 bg-[#fbfdff]">
     <div class="flex flex-wrap gap-4 text-sm">
-      <div><div class="text-[11px] text-[#616161] uppercase">Binance BELI (P2P SELL termurah)</div><div id="binancePrice" class="font-mono font-bold text-[15px]">—</div></div>
+      <div><div class="text-[11px] text-[#616161] uppercase">Binance BELI (P2P BUY)</div><div id="binancePrice" class="font-mono font-bold text-[15px]">—</div><div class="text-[11px] text-[#8a8a8a]">orang jual — lu beli @ 17.56xx</div></div>
       <div class="text-[#8a8a8a] self-center">→</div>
-      <div><div class="text-[11px] text-[#616161] uppercase">Pintu JUAL (Bid) / BELI (Ask)</div><div id="pintuPrice" class="font-mono font-bold text-[15px]">—</div><div class="text-[11px] text-[#8a8a8a]">limit order butuh API key Pro</div></div>
+      <div><div class="text-[11px] text-[#616161] uppercase">Pintu JUAL (Bid)</div><div id="pintuPrice" class="font-mono font-bold text-[15px]">—</div><div class="text-[11px] text-[#8a8a8a]">orderbook Bid 17.614 / Ask 17.615</div></div>
       <div class="ml-auto text-right">
-        <div class="text-[11px] text-[#616161] uppercase">Spread — Untung kotor / USDT</div>
+        <div class="text-[11px] text-[#616161] uppercase">Spread kotor / USDT</div>
         <div id="spread" class="font-mono font-bold text-[15px] text-[#0067c0]">—</div>
-        <div id="spreadNote" class="text-[11px] text-[#8a8a8a]">belum hitung fee transfer + withdraw</div>
+        <div id="spreadNote" class="text-[11px] text-[#8a8a8a]">BEP20 0.29 USDT + withdraw 4.5k + 0.1% fee</div>
       </div>
-      <div class="w-full grid grid-cols-3 gap-2 mt-2 text-xs">
-        <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Transfer Binance→Pintu</div><div>TRC20 ~1 USDT (~Rp <span id="feeTransfer">17.5k</span>)</div></div>
-        <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Withdraw IDR Pintu</div><div>Rp 4.500 (flat)</div></div>
-        <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Fee trading Pintu</div><div>0.1% jual</div></div>
-      </div>
+    </div>
+    <div class="grid grid-cols-3 gap-2 mt-3 text-xs">
+      <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Transfer BEP20</div><div>0.29 USDT (~Rp <span id="feeBep20">5k</span>)</div></div>
+      <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Withdraw IDR Pintu</div><div>Rp 4.500</div></div>
+      <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Fee Pintu jual</div><div>0.1%</div></div>
+    </div>
+    <div class="mt-3">
+      <div class="text-[11px] font-semibold text-[#616161] uppercase mb-1">Simulasi Untung (modal IDR → BEP20)</div>
+      <div class="overflow-x-auto"><table class="w-full text-xs"><thead><tr class="text-[#616161]"><th class="text-left p-1">Modal</th><th class="text-right p-1">Qty USDT</th><th class="text-right p-1">Jual Pintu</th><th class="text-right p-1">Net Untung</th><th class="text-right p-1">% </th></tr></thead><tbody id="simBody"></tbody></table></div>
     </div>
   </div>
 
@@ -58,8 +62,8 @@
       <div>
         <label class="text-[11px] text-[#616161] uppercase">Mode</label>
         <select id="tradeType" class="select-win w-full mt-1">
-          <option value="SELL" selected>Beli USDT (lu BELI — orang jual)</option>
-          <option value="BUY">Jual USDT (lu JUAL — orang beli)</option>
+          <option value="BUY" selected>Beli USDT (lu BELI — orang jual) — Rp 17.56xx</option>
+          <option value="SELL">Jual USDT (lu JUAL — orang beli) — Rp 17.53xx</option>
         </select>
       </div>
       <div>
@@ -142,13 +146,27 @@ function applyFilters(){
     <td class="p-3 text-right font-mono text-xs">Rp ${Number(x.min).toLocaleString('id-ID')}</td>
     <td class="p-3 pr-4 text-right font-mono text-xs">Rp ${Number(x.max).toLocaleString('id-ID')}</td>
   </tr>`).join('') || `<tr><td colspan=6 class="p-8 text-center">Tidak ada hasil</td></tr>`;
-  // update spread
+  // update spread + simulasi BEP20
   if(d.length && window.pintuPrice){
     const binance=d[0].price;
     document.getElementById('binancePrice').textContent='Rp '+Number(binance).toLocaleString('id-ID');
+    document.getElementById('feeBep20').textContent=(0.29*binance).toLocaleString('id-ID', {maximumFractionDigits:0});
     const spread=window.pintuPrice-binance;
-    document.getElementById('spread').textContent='Rp '+spread.toLocaleString('id-ID')+' ('+(spread/binance*100).toFixed(2)+'%)';
-    document.getElementById('spreadNote').textContent='Untung kotor — belum fee transfer/withdraw';
+    document.getElementById('spread').textContent='Rp '+spread.toLocaleString('id-ID')+' ('+(spread/binance*100).toFixed(3)+'%)';
+    document.getElementById('spreadNote').textContent='BEP20 0.29 USDT + withdraw 4.5k + 0.1%';
+    // simulasi modal x,y,z,a,b,c
+    const modals=[1000000,5000000,10000000,50000000,100000000,500000000];
+    const feeBep20IDR=0.29*binance;
+    const tb=document.getElementById('simBody');
+    tb.innerHTML=modals.map(m=>{
+      const qty=m/binance;
+      const gross=qty*window.pintuPrice;
+      const feePintu=gross*0.001;
+      const net=gross - feePintu - feeBep20IDR - 4500 - m;
+      const pct=net/m*100;
+      const cls=net>0?'text-green-600':'text-red-600';
+      return `<tr class="border-t" style="border-color:#f0f0f0"><td class="p-1">Rp ${m.toLocaleString('id-ID')}</td><td class="p-1 text-right font-mono">${qty.toFixed(2)}</td><td class="p-1 text-right font-mono">Rp ${gross.toLocaleString('id-ID',{maximumFractionDigits:0})}</td><td class="p-1 text-right font-mono ${cls}">${net>0?'+':''}Rp ${net.toLocaleString('id-ID',{maximumFractionDigits:0})}</td><td class="p-1 text-right font-mono ${cls}">${pct.toFixed(2)}%</td></tr>`;
+    }).join('');
   }
 }
 async function load(){
