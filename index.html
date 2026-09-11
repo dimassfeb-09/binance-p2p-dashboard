@@ -42,11 +42,11 @@
       <div class="ml-auto text-right">
         <div class="text-[11px] text-[#616161] uppercase">Spread kotor / USDT</div>
         <div id="spread" class="font-mono font-bold text-[15px] text-[#0067c0]">—</div>
-        <div id="spreadNote" class="text-[11px] text-[#8a8a8a]">BEP20 0.29 USDT + withdraw 4.5k + 0.1% fee</div>
+        <div id="spreadNote" class="text-[11px] text-[#8a8a8a]">BEP20 0.01 USDT + withdraw 4.5k + 0.1% fee</div>
       </div>
     </div>
     <div class="grid grid-cols-3 gap-2 mt-3 text-xs">
-      <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Transfer BEP20</div><div>0.29 USDT (~Rp <span id="feeBep20">5k</span>)</div></div>
+      <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Transfer BEP20</div><div>0.01 USDT (~Rp <span id="feeBep20">5k</span>)</div></div>
       <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Withdraw IDR Pintu</div><div>Rp 4.500</div></div>
       <div class="bg-[#f3f3f3] rounded p-2"><div class="text-[#616161]">Fee Pintu jual</div><div>0.1%</div></div>
     </div>
@@ -150,13 +150,13 @@ function applyFilters(){
   if(d.length && window.pintuPrice){
     const binance=d[0].price;
     document.getElementById('binancePrice').textContent='Rp '+Number(binance).toLocaleString('id-ID');
-    document.getElementById('feeBep20').textContent=(0.29*binance).toLocaleString('id-ID', {maximumFractionDigits:0});
+    document.getElementById('feeBep20').textContent=(0.01*binance).toLocaleString('id-ID', {maximumFractionDigits:0});
     const spread=window.pintuPrice-binance;
     document.getElementById('spread').textContent='Rp '+spread.toLocaleString('id-ID')+' ('+(spread/binance*100).toFixed(3)+'%)';
-    document.getElementById('spreadNote').textContent='BEP20 0.29 USDT + withdraw 4.5k + 0.1%';
+    document.getElementById('spreadNote').textContent='BEP20 0.01 USDT + withdraw 4.5k + 0.1%';
     // simulasi modal x,y,z,a,b,c
     const modals=[1000000,5000000,10000000,50000000,100000000,500000000];
-    const feeBep20IDR=0.29*binance;
+    const feeBep20IDR=0.01*binance;
     const tb=document.getElementById('simBody');
     tb.innerHTML=modals.map(m=>{
       const qty=m/binance;
