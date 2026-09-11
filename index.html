@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Binance P2P — binance.dimassfeb.com</title>
+<title>Binance P2P — USDT/IDR</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
@@ -13,9 +13,10 @@
   .card{background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 1px 2px rgba(0,0,0,0.06),0 4px 12px rgba(0,0,0,0.04)}
   .btn-primary{background:var(--accent);color:#fff;border-radius:4px;padding:6px 14px;font-size:13px;font-weight:600}
   .btn-primary:hover{background:#005a9e}
-  .select-win{background:#fff;border:1px solid #e5e5e5;border-radius:4px;padding:7px 10px;font-size:13px}
+  .select-win{background:#fff;border:1px solid #e5e5e5;border-radius:4px;padding:7px 10px;font-size:13px;min-width:140px}
+  .input-win{background:#fff;border:1px solid #e5e5e5;border-radius:4px;padding:7px 10px;font-size:13px;min-width:120px}
   .badge{font-size:11px;padding:2px 6px;border-radius:4px;background:#f0f0f0;border:1px solid #e6e6e6}
-  th{font-weight:600;font-size:12px;letter-spacing:0.02em;text-transform:uppercase;color:#616161}
+  th{font-weight:600;font-size:11px;letter-spacing:0.04em;text-transform:uppercase;color:#616161}
 </style>
 </head>
 <body>
@@ -25,7 +26,7 @@
       <div class="w-8 h-8 rounded bg-[#0067c0] grid place-items-center text-white text-[11px] font-bold">₮</div>
       <div>
         <div class="text-[15px] font-semibold leading-none">Binance P2P</div>
-        <div class="text-xs text-[#616161]">binance.dimassfeb.com • USDT/IDR • WinUI 3</div>
+        <div class="text-xs text-[#616161]">USDT/IDR</div>
       </div>
     </div>
     <a href="https://dimassfeb.com" class="text-xs text-[#0067c0] hover:underline">← dimassfeb.com</a>
@@ -33,63 +34,115 @@
 </header>
 
 <main class="max-w-[1120px] mx-auto px-6 py-6">
-  <div class="card p-4 mb-4 flex flex-wrap gap-3 items-center">
-    <label class="text-xs text-[#616161]">Trade</label>
-    <select id="tradeType" class="select-win">
-      <option value="SELL" selected>Jual USDT (orang jual — lu beli) • termurah ↑</option>
-      <option value="BUY">Beli USDT (orang beli — lu jual)</option>
-    </select>
-    <label class="text-xs text-[#616161] ml-2">Sort</label>
-    <select id="sortBy" class="select-win">
-      <option value="price-min" selected>Price ↑ then Min ↑</option>
-      <option value="price">Price ↑ only</option>
-      <option value="min">Min IDR ↑</option>
-    </select>
-    <button id="refresh" class="btn-primary ml-auto">Refresh</button>
-    <span id="updated" class="text-xs text-[#616161]"></span>
+  <!-- Filters — masing-masing -->
+  <div class="card p-4 mb-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div>
+        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Trade</label>
+        <select id="tradeType" class="select-win w-full mt-1">
+          <option value="SELL" selected>Jual USDT (lu beli)</option>
+          <option value="BUY">Beli USDT (lu jual)</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Metode Bayar</label>
+        <select id="payFilter" class="select-win w-full mt-1">
+          <option value="">Semua</option>
+          <option value="BCA">BCA</option>
+          <option value="Mandiri">Mandiri</option>
+          <option value="BRI">BRI</option>
+          <option value="BNI">BNI</option>
+          <option value="SEA">SEA Bank</option>
+          <option value="GoPay">GoPay</option>
+          <option value="OVO">OVO</option>
+          <option value="DANA">DANA</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Min IDR</label>
+        <select id="minFilter" class="select-win w-full mt-1">
+          <option value="">Semua</option>
+          <option value="0-1000000">< 1 jt</option>
+          <option value="1000000-5000000">1–5 jt</option>
+          <option value="5000000-999999999">> 5 jt</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Sort</label>
+        <select id="sortBy" class="select-win w-full mt-1">
+          <option value="price-min" selected>Price ↑ → Min ↑</option>
+          <option value="price">Price ↑</option>
+          <option value="min">Min ↑</option>
+        </select>
+      </div>
+      <div>
+        <label class="text-[11px] text-[#616161] uppercase tracking-wide">Cari Merchant</label>
+        <input id="search" class="input-win w-full mt-1" placeholder="nama merchant..."/>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-3">
+      <button id="refresh" class="btn-primary">Refresh</button>
+      <button id="reset" class="text-xs px-3 py-1 border rounded" style="border-color:var(--border)">Reset filter</button>
+      <span id="updated" class="text-xs text-[#616161] self-center ml-auto"></span>
+      <span id="count" class="text-xs bg-[#f0f0f0] px-2 py-1 rounded"></span>
+    </div>
   </div>
 
   <div class="card overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full">
         <thead class="bg-[#fbfbfb] border-b" style="border-color:var(--border)">
-          <tr><th class="text-left p-3 pl-4 w-8">#</th><th class="text-right p-3">Price IDR</th><th class="text-left p-3">Merchant</th><th class="text-left p-3">Metode</th><th class="text-right p-3">Min IDR</th><th class="text-right p-3 pr-4">Max IDR</th></tr>
+          <tr><th class="text-left p-3 pl-4 w-8">#</th><th class="text-right p-3">Price IDR</th><th class="text-left p-3">Merchant • Rate</th><th class="text-left p-3">Metode</th><th class="text-right p-3">Min IDR</th><th class="text-right p-3 pr-4">Max IDR</th></tr>
         </thead>
         <tbody id="tbody"><tr><td colspan="6" class="p-8 text-center text-sm text-[#616161]">Memuat...</td></tr></tbody>
       </table>
     </div>
   </div>
-  <p class="text-[11px] text-[#8a8a8a] mt-3">Sumber: p2p.binance.com/bapi via /api/p2p (unofficial) • Sorting: Price termurah di atas, lalu Min terendah • Refresh 30s • WinUI 3 Mica</p>
+  <p class="text-[11px] text-[#8a8a8a] mt-3">Sumber: p2p.binance.com/bapi via /api/p2p • Filter masing-masing (trade, pay, min, search) • Sort Price→Min • 30s refresh</p>
 </main>
 
 <script>
 let cache=[];
-function render(){
+function applyFilters(){
+  let d=[...cache];
+  const pay=document.getElementById('payFilter').value.toLowerCase();
+  const minF=document.getElementById('minFilter').value;
+  const search=document.getElementById('search').value.toLowerCase();
+  if(pay) d=d.filter(x=>x.payMethods.toLowerCase().includes(pay));
+  if(minF){
+    const [lo,hi]=minF.split('-').map(Number);
+    d=d.filter(x=>{const m=parseFloat(x.min); return m>=lo && m<=hi;});
+  }
+  if(search) d=d.filter(x=>x.merchant.toLowerCase().includes(search));
   const sort=document.getElementById('sortBy').value;
-  let data=[...cache];
-  if(sort==='price-min') data.sort((a,b)=> a.price!==b.price ? a.price-b.price : parseFloat(a.min)-parseFloat(b.min));
-  else if(sort==='price') data.sort((a,b)=>a.price-b.price);
-  else if(sort==='min') data.sort((a,b)=>parseFloat(a.min)-parseFloat(b.min));
+  if(sort==='price-min') d.sort((a,b)=> a.price!==b.price ? a.price-b.price : parseFloat(a.min)-parseFloat(b.min));
+  else if(sort==='price') d.sort((a,b)=>a.price-b.price);
+  else if(sort==='min') d.sort((a,b)=>parseFloat(a.min)-parseFloat(b.min));
   const tb=document.getElementById('tbody');
-  tb.innerHTML=data.map((d,i)=>`<tr class="border-t hover:bg-[#f5f5f5]" style="border-color:#f0f0f0">
+  document.getElementById('count').textContent=d.length+' / '+cache.length;
+  tb.innerHTML=d.map((x,i)=>`<tr class="border-t hover:bg-[#f5f5f5]" style="border-color:#f0f0f0">
     <td class="p-3 pl-4 text-xs text-[#8a8a8a]">${i+1}</td>
-    <td class="p-3 text-right font-mono text-[13px] font-semibold">Rp ${Number(d.price).toLocaleString('id-ID')}</td>
-    <td class="p-3"><div class="text-[13px] font-medium">${d.merchant}</div><div class="text-[11px] text-[#616161]">${d.completion} • ${d.orders||0} orders</div></td>
-    <td class="p-3"><span class="badge">${d.payMethods||'—'}</span></td>
-    <td class="p-3 text-right font-mono text-xs">Rp ${Number(d.min).toLocaleString('id-ID')}</td>
-    <td class="p-3 pr-4 text-right font-mono text-xs">Rp ${Number(d.max).toLocaleString('id-ID')}</td>
-  </tr>`).join('') || `<tr><td colspan=6 class="p-8 text-center text-sm text-[#616161]">Tidak ada data</td></tr>`;
+    <td class="p-3 text-right font-mono text-[13px] font-semibold">Rp ${Number(x.price).toLocaleString('id-ID')}</td>
+    <td class="p-3"><div class="text-[13px] font-medium">${x.merchant}</div><div class="text-[11px] text-[#616161]">${x.completion} • ${x.orders||0} orders • ${x.tradable} USDT</div></td>
+    <td class="p-3"><span class="badge">${x.payMethods||'—'}</span></td>
+    <td class="p-3 text-right font-mono text-xs">Rp ${Number(x.min).toLocaleString('id-ID')}</td>
+    <td class="p-3 pr-4 text-right font-mono text-xs">Rp ${Number(x.max).toLocaleString('id-ID')}</td>
+  </tr>`).join('') || `<tr><td colspan=6 class="p-8 text-center text-sm text-[#616161]">Tidak ada hasil — coba reset filter</td></tr>`;
 }
 async function load(){
   const t=document.getElementById('tradeType').value;
   const r=await fetch(`/api/p2p?tradeType=${t}&rows=20`);
   const j=await r.json();
-  cache=j.data||[]; render();
-  document.getElementById('updated').textContent=new Date().toLocaleTimeString('id-ID')+' • '+j.tradeType+' • '+cache.length+' iklan';
+  cache=j.data||[]; applyFilters();
+  document.getElementById('updated').textContent=new Date().toLocaleTimeString('id-ID')+' • '+j.tradeType;
 }
 document.getElementById('tradeType').addEventListener('change',load);
-document.getElementById('sortBy').addEventListener('change',render);
+document.getElementById('payFilter').addEventListener('change',applyFilters);
+document.getElementById('minFilter').addEventListener('change',applyFilters);
+document.getElementById('sortBy').addEventListener('change',applyFilters);
+document.getElementById('search').addEventListener('input',applyFilters);
 document.getElementById('refresh').addEventListener('click',load);
+document.getElementById('reset').addEventListener('click',()=>{document.getElementById('payFilter').value='';document.getElementById('minFilter').value='';document.getElementById('search').value='';document.getElementById('sortBy').value='price-min';applyFilters();});
 load(); setInterval(load,30000);
 </script>
 </body>
